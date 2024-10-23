@@ -1,0 +1,385 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文件内容处理器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 95vh;
+        }
+        .container {
+            display: flex;
+            flex: 1;
+        }
+        .left-panel {
+            width: 30%;
+            padding-right: 20px;
+        }
+        .right-panel {
+            width: 70%;
+        }
+        #preview {
+            white-space: pre-wrap;
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: calc(100% - 40px);
+            overflow-y: auto;
+        }
+        button {
+            margin-bottom: 10px;
+        }
+        #fileList {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: calc(100% - 40px);
+            overflow-y: auto;
+        }
+        #log {
+            border-top: 1px solid #ccc;
+            padding: 10px;
+            height: 100px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>文件内容处理器</h1>
+    <div class="container">
+        <div class="left-panel">
+            <button onclick="chooseFiles()">选择文件</button>
+            <div id="fileList"></div>
+        </div>
+        <div class="right-panel">
+            <button onclick="copyContent()">复制内容</button>
+            <div id="preview"></div>
+        </div>
+    </div>
+    <div id="log"></div>
+
+    <script>
+        let selectedFiles = [];
+        let combinedContent = '';
+
+        function log(message) {
+            const logElement = document.getElementById('log');
+            logElement.innerHTML += new Date().toLocaleTimeString() + ': ' + message + '<br>';
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(message);
+        }
+
+        // function chooseFiles() {
+        //     log('尝试打开文件选择对话框...');
+        //     const result = utools.showOpenDialog({
+        //         filters: [{ name: 'All Files', extensions: ['*'] }],
+        //         properties: ['openFile', 'multiSelections']
+        //     });
+            
+        //     if (result && result.length > 0) {
+        //         log('文件选择成功，选中了 ' + result.length + ' 个文件');
+        //         selectedFiles = result;
+        //         updateFileList();
+        //         processFiles();
+        //     } else {
+        //         log('未选择任何文件');
+        //     }
+        // }
+
+        function chooseFiles() {
+    log('尝试打开文件选择对话框...');
+    const result = utools.showOpenDialog({
+        filters: [{ name: 'All Files', extensions: ['*'] }],
+        properties: ['openFile', 'multiSelections']
+    });
+    
+    if (result && result.length > 0) {
+        log('文件选择成功，选中了 ' + result.length + ' 个文件');
+        selectedFiles = result;
+        
+        // 打印获取的文件路径
+        log('获取的文件路径:');
+        result.forEach((path, index) => {
+            log(`文件 ${index + 1}: ${path}`);
+        });
+        
+        updateFileList();
+        processFiles();
+    } else {
+        log('未选择任何文件');
+    }
+}
+
+
+        function updateFileList() {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '<h3>选择的文件：</h3>' + selectedFiles.map(file => `<div>${file}</div>`).join('');
+            log('文件列表已更新，共 ' + selectedFiles.length + ' 个文件');
+        }
+
+        function processFiles() {
+            if (selectedFiles.length === 0) {
+                log('没有选择文件，无法处理');
+                return;
+            }
+            log('开始处理文件...');
+            try {
+                const files = window.readFiles(selectedFiles);
+                combinedContent = files.map(file => `# ${file.name}\n\n${file.content}`).join('\n\n');
+                document.getElementById('preview').textContent = combinedContent;
+                log('文件处理完成，预览已更新');
+            } catch (error) {
+                log('处理文件时出错: ' + error);
+            }
+        }
+
+        function copyContent() {
+            if (!combinedContent) {
+                log('没有内容可复制');
+                return;
+            }
+            try {
+                window.copyToClipboard(combinedContent);
+                log('内容已复制到剪贴板');
+            } catch (error) {
+                log('复制到剪贴板时出错: ' + error);
+            }
+        }
+
+        window.exports = {
+            'file-processor': {
+                mode: 'none',
+                args: {
+                    enter: (action, callbackSetList) => {
+                        log('插件已启动');
+                    }
+                }
+            }
+        }
+
+        window.onload = function() {
+            log('页面已加载，插件就绪');
+        }
+    </script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文件内容处理器</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            background-color: #f0f4f8;
+            color: #333;
+            margin: 0;
+            overflow-y: auto;
+            height: 100vh;
+        }
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .panel {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .left-panel {
+            width: 30%;
+        }
+        .right-panel {
+            width: 70%;
+        }
+        #preview {
+            white-space: pre-wrap;
+            flex: 1;
+            overflow-y: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            padding: 10px 0;
+            max-height: 300px;
+        }
+        button {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #357abd;
+        }
+        #fileList {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 0;
+            max-height: 300px;
+        }
+        #log {
+            background-color: #ffffff;
+            border-radius: 4px;
+            padding: 10px;
+            height: 100px;
+            overflow-y: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+        }
+        h1, h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5px 0;
+        }
+        .file-icon {
+            margin-right: 10px;
+            color: #4a90e2;
+        }
+        .remove-file {
+            color: #e74c3c;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="container">
+            <div class="left-panel panel">
+                <button onclick="chooseFiles()">选择文件</button>
+                <div id="fileList"></div>
+            </div>
+            <div class="right-panel panel">
+                <button onclick="copyContent()">复制内容</button>
+                <div id="preview"></div>
+            </div>
+        </div>
+        <div id="log" class="panel"></div>
+    </div>
+
+    <script>
+        let selectedFiles = [];
+        let combinedContent = '';
+
+        function log(message) {
+            const logElement = document.getElementById('log');
+            const logEntry = document.createElement('div');
+            logEntry.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+            logElement.appendChild(logEntry);
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(message);
+        }
+
+        function chooseFiles() {
+            log('尝试打开文件选择对话框...');
+            const result = utools.showOpenDialog({
+                filters: [{ name: 'All Files', extensions: ['*'] }],
+                properties: ['openFile', 'multiSelections']
+            });
+            
+            if (result && result.length > 0) {
+                log('文件选择成功，选中了 ' + result.length + ' 个文件');
+                selectedFiles = result;
+                
+                log('获取的文件路径:');
+                result.forEach((path, index) => {
+                    log(`文件 ${index + 1}: ${path}`);
+                });
+                
+                updateFileList();
+                processFiles();
+            } else {
+                log('未选择任何文件');
+            }
+        }
+
+        function updateFileList() {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '<h3>选择的文件：</h3>' + selectedFiles.map((file, index) => 
+                `<div class="file-item">
+                    <span><span class="file-icon">📄</span>${file.split('/').pop()}</span>
+                    <span class="remove-file" onclick="removeFile(${index})">✖</span>
+                </div>`
+            ).join('');
+            log('文件列表已更新，共 ' + selectedFiles.length + ' 个文件');
+        }
+
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            updateFileList();
+            processFiles();
+        }
+
+        function processFiles() {
+    if (selectedFiles.length === 0) {
+        log('没有选择文件，无法处理');
+        document.getElementById('preview').textContent = '';
+        combinedContent = '';
+        return;
+    }
+    log('开始处理文件...');
+    try {
+        const files = window.readFiles(selectedFiles);
+        combinedContent = files.map(file => 
+            `# ${selectedFiles.find(path => path.endsWith(file.name))}的内容是:\n\`\`\`\n${file.content}\n\`\`\``
+        ).join('\n\n');
+        document.getElementById('preview').textContent = combinedContent;
+        log('文件处理完成，预览已更新');
+    } catch (error) {
+        log('处理文件时出错: ' + error);
+    }
+}
+
+
+        function copyContent() {
+            if (!combinedContent) {
+                log('没有内容可复制');
+                return;
+            }
+            try {
+                window.copyToClipboard(combinedContent);
+                log('内容已复制到剪贴板');
+            } catch (error) {
+                log('复制到剪贴板时出错: ' + error);
+            }
+        }
+
+        window.exports = {
+            'file-processor': {
+                mode: 'none',
+                args: {
+                    enter: (action, callbackSetList) => {
+                        log('插件已启动');
+                    }
+                }
+            }
+        }
+
+        window.onload = function() {
+            log('页面已加载，插件就绪');
+        }
+    </script>
+</body>
+</html>

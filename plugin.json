@@ -1,0 +1,28 @@
+{
+  "pluginName": "文件内容处理器",
+  "description": "读取选定文件、拼接预览内容并提供一键复制",
+  "main": "index.html",
+  "preload": "preload.js",
+  "version": "0.0.1",
+  "author": "Your Name",
+  "logo": "logo.png",
+  "platform": ["darwin", "win32", "linux"],
+  "features": [
+    {
+      "code": "file-processor",
+      "explain": "处理文件内容",
+      "cmds": [
+        {
+          "type": "files",
+          "label": "处理文件内容",
+          "fileType": "file",
+          "minNum": 1,
+          "maxNum": 99
+        },
+        "处理文件"
+      ]
+    }
+  ]
+}
+
+
